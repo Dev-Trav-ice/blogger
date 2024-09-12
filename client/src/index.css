@@ -11,7 +11,7 @@
 }
 
 body {
-  font-family: "Inter";
+  font-family: serif;
 }
 
 @layer utilities {
@@ -28,10 +28,14 @@ body {
   }
 
   .btn {
-    @apply text-sm py-1 px-3 cursor-pointer rounded-xl;
+    @apply py-1 px-3 cursor-pointer rounded-xl;
   }
 
   .bold-32 {
     @apply text-[32px] font-[700] leading-[120%];
+  }
+
+  .medium-18 {
+    @apply text-[18px] font-[400];
   }
 }
