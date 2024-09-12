@@ -19,8 +19,16 @@ body {
     @apply flex items-center justify-center;
   }
 
+  .flexBetween {
+    @apply flex items-center justify-between;
+  }
+
   .max-container {
-    @apply max-w-[1280px] mx-auto;
+    @apply max-w-[1200px] mx-auto;
+  }
+
+  .btn {
+    @apply text-sm py-1 px-3 cursor-pointer rounded-xl;
   }
 
   .bold-32 {
