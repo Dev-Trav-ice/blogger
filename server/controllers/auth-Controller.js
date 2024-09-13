@@ -24,8 +24,6 @@ export const register = (req, res) => {
     db.query(q, [username, email, hashedPassword], (err, results) => {
       if (err) throw err;
 
-      res.status(200).json("user registered successfully");
-
       const q = "SELECT * FROM user WHERE id = ?";
 
       db.query(q, [results.insertId], (err, data) => {
@@ -36,7 +34,7 @@ export const register = (req, res) => {
         });
 
         const { password, ...others } = data[0];
-        res
+        return res
           .cookie("access_token", token, {
             httpOnly: true,
           })
@@ -55,7 +53,7 @@ export const login = (req, res) => {
   db.query(q, [username], (err, results) => {
     if (err) throw err;
 
-    if (results.length < 0)
+    if (results.length === 0)
       return res.status(404).json({ message: "user does not exist" });
 
     const plaintextPassword = req.body.password;

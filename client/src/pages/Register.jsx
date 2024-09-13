@@ -1,7 +1,29 @@
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import { useState } from "react";
+import axios from "axios";
 
 function Register() {
+  const [values, setValues] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
+
+  const handleChange = (e) => {
+    setValues({ ...values, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    try {
+      const res = axios.post("/api/auth/sign-up", values);
+      console.log(res);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div>
       <Navbar />
@@ -16,6 +38,8 @@ function Register() {
             <input
               type="text"
               placeholder="username"
+              name="username"
+              onChange={handleChange}
               className="border-none bg-transparent outline-none w-full placeholder:text-black/50"
             />
           </div>
@@ -24,6 +48,8 @@ function Register() {
             <input
               type="email"
               placeholder="email"
+              name="email"
+              onChange={handleChange}
               className="border-none bg-transparent outline-none w-full placeholder:text-black/50"
             />
           </div>
@@ -32,11 +58,16 @@ function Register() {
             <input
               type="password"
               placeholder="password"
+              name="password"
+              onChange={handleChange}
               className="border-none bg-transparent outline-none w-full placeholder:text-black/50"
             />
           </div>
 
-          <button className="p-3 bg-black text-white text-[16px] rounded-md">
+          <button
+            className="p-3 bg-black text-white text-[16px] rounded-md"
+            onClick={handleSubmit}
+          >
             Sign Up
           </button>
           <p className=" medium-18 font-serif">
