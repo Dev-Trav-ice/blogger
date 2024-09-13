@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 
+const JWT_SECRET = process.env.jwt_secret;
 dotenv.config();
 
 export const register = (req, res) => {
@@ -23,12 +24,12 @@ export const register = (req, res) => {
     db.query(q, [username, email, hashedPassword], (err, results) => {
       if (err) throw err;
 
+      res.status(200).json("user registered successfully");
+
       const q = "SELECT * FROM user WHERE id = ?";
 
       db.query(q, [results.insertId], (err, data) => {
         if (err) throw err;
-
-        const JWT_SECRET = process.env.jwt_secret;
 
         const token = jwt.sign({ id: data[0].id }, JWT_SECRET, {
           expiresIn: "5h",
@@ -46,6 +47,37 @@ export const register = (req, res) => {
   });
 };
 
-export const login = () => {};
+export const login = (req, res) => {
+  const { username } = req.body;
+
+  const q = "SELECT * from user WHERE username = ?";
+
+  db.query(q, [username], (err, results) => {
+    if (err) throw err;
+
+    if (results.length < 0)
+      return res.status(404).json({ message: "user does not exist" });
+
+    const plaintextPassword = req.body.password;
+
+    const existingUserPassword = bcrypt.compareSync(
+      plaintextPassword,
+      results[0].password
+    );
+
+    if (!existingUserPassword)
+      return res.status(400).json({ message: "Wrong credentials, try again" });
+
+    const token = jwt.sign({ id: results[0].id }, JWT_SECRET, {
+      expiresIn: "5h",
+    });
+    const { password, ...others } = results[0];
+
+    res
+      .cookie("access_token", token, { httpOnly: true })
+      .status(200)
+      .json(others);
+  });
+};
 
 export const logout = () => {};
