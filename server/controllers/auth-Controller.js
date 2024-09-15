@@ -9,6 +9,9 @@ dotenv.config();
 export const register = (req, res) => {
   const { username, email, password } = req.body;
 
+  if (!username || !email || !password)
+    return res.status(400).json({ message: "Please fill in all the fields" });
+
   const q = "SELECT * FROM user WHERE username = ?";
 
   db.query(q, [username], (err, results) => {

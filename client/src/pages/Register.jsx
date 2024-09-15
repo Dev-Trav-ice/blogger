@@ -2,6 +2,13 @@ import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { useState } from "react";
 import axios from "axios";
+import {
+  signInFailure,
+  signInStart,
+  signInSuccess,
+} from "../redux/user/userSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 function Register() {
   const [values, setValues] = useState({
@@ -9,6 +16,12 @@ function Register() {
     email: "",
     password: "",
   });
+  const [err, setErr] = useState(null);
+
+  const { loading } = useSelector((state) => state.User);
+
+  console.log(loading);
+  const dispatch = useDispatch();
 
   const handleChange = (e) => {
     setValues({ ...values, [e.target.name]: e.target.value });
@@ -16,13 +29,27 @@ function Register() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    dispatch(signInStart());
 
-    try {
-      const res = axios.post("/api/auth/sign-up", values);
-      console.log(res);
-    } catch (error) {
-      console.log(error);
-    }
+    const res = axios
+      .post("/api/auth/sign-up", values)
+      .then((data) => {
+        dispatch(signInSuccess(data));
+        toast.success("User created successfully", {
+          position: "top-center",
+          autoClose: 3000,
+          theme: "dark",
+        });
+      })
+      .catch((error) => {
+        dispatch(signInFailure(error));
+        setErr(error.response.data.message);
+        toast.error(err, {
+          position: "top-center",
+          autoClose: 3000,
+          theme: "dark",
+        });
+      });
   };
   return (
     <div>
@@ -68,7 +95,7 @@ function Register() {
             className="p-3 bg-black text-white text-[16px] rounded-md"
             onClick={handleSubmit}
           >
-            Sign Up
+            {loading ? "Loading..." : "Sign Up"}
           </button>
           <p className=" medium-18 font-serif">
             Already have an account?{" "}
