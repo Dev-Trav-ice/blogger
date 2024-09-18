@@ -6,6 +6,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Create from "./pages/Create";
 
 const Layout = () => {
   return (
@@ -33,6 +34,10 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <Home />,
+      },
+      {
+        path: "/create-post",
+        element: <Create />,
       },
     ],
   },

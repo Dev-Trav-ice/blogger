@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { useState } from "react";
 import axios from "axios";
@@ -16,11 +16,11 @@ function Register() {
     email: "",
     password: "",
   });
+  const navigate = useNavigate();
   const [err, setErr] = useState(null);
 
-  const { loading } = useSelector((state) => state.User);
+  const [loading, setLoading] = useState(false);
 
-  console.log(loading);
   const dispatch = useDispatch();
 
   const handleChange = (e) => {
@@ -31,15 +31,18 @@ function Register() {
     e.preventDefault();
     dispatch(signInStart());
 
+    setLoading(true);
     const res = axios
       .post("/api/auth/sign-up", values)
       .then((data) => {
         dispatch(signInSuccess(data));
+        navigate("/");
         toast.success("User created successfully", {
           position: "top-center",
           autoClose: 3000,
           theme: "dark",
         });
+        setLoading(false);
       })
       .catch((error) => {
         dispatch(signInFailure(error));
@@ -49,6 +52,7 @@ function Register() {
           autoClose: 3000,
           theme: "dark",
         });
+        setLoading(false);
       });
   };
   return (

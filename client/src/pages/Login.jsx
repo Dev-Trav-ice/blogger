@@ -1,7 +1,14 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import axios from "axios";
+import {
+  signInFailure,
+  signInStart,
+  signInSuccess,
+} from "../redux/user/userSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 function Login() {
   const [values, setValues] = useState({
@@ -13,14 +20,37 @@ function Login() {
     setValues({ ...values, [e.target.name]: e.target.value });
   };
 
+  const navigate = useNavigate();
+  const [err, setErr] = useState(null);
+
+  const [loading, setLoading] = useState(false);
+
+  const dispatch = useDispatch();
+
   const handleSubmit = (e) => {
     e.preventDefault();
-
+    setLoading(true);
     try {
-      const res = axios.post("/api/auth/sign-in", values);
+      const res = axios.post("/api/auth/sign-in", values).then((data) => {
+        dispatch(signInSuccess(data));
+        navigate("/");
+        toast.success("login successfully", {
+          position: "top-center",
+          autoClose: 3000,
+          theme: "dark",
+        });
+        setLoading(false);
+      });
       console.log(res);
     } catch (error) {
-      console.log(error);
+      setLoading(false);
+      dispatch(signInFailure(error));
+      setErr(error.response.data.message);
+      toast.error(err, {
+        position: "top-center",
+        autoClose: 3000,
+        theme: "dark",
+      });
     }
   };
   return (
@@ -57,7 +87,7 @@ function Login() {
             onClick={handleSubmit}
             className="p-3 bg-black text-white text-[16px] rounded-md"
           >
-            Sign In
+            {loading ? "Loading..." : "Sign in"}
           </button>
           <p className=" medium-18 font-serif">
             Don't have an account?{" "}
