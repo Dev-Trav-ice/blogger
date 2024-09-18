@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
 import { db } from "./db.js";
 import Authrouter from "./routes/auth-Route.js";
+import postRouter from "./routes/post-Route.js";
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 //routes
 app.use("/api/auth", Authrouter);
+app.use("/api/posts", postRouter);
 
 app.listen(PORT, () => {
   console.log(`listening...`);

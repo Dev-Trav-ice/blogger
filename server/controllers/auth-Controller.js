@@ -49,7 +49,10 @@ export const register = (req, res) => {
 };
 
 export const login = (req, res) => {
-  const { username } = req.body;
+  const { username, password } = req.body;
+
+  if (!username || !password)
+    return res.status(400).json({ message: "Please fill in all the fields" });
 
   const q = "SELECT * from user WHERE username = ?";
 
